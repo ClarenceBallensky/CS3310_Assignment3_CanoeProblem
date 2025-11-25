@@ -37,6 +37,14 @@ public class Main {
 
         computeOptimalCosts(costMatrix, optimalMatrix, nextMatrix, numberTradingPosts);
 
+        printOptimalCostMatrix(optimalMatrix, numberTradingPosts);
+
+        int startPost = 0; //route starts at post 0
+        //if there are 4 posts, the posts are numbered 0, 1, 2, 3--ending at post 3
+        int endPost = numberTradingPosts - 1;
+
+        ArrayList<Integer> routeList = reconstructRoute(startPost, endPost, nextMatrix);
+        printRoute(routeList);
 
     }
 
@@ -156,7 +164,7 @@ public class Main {
      * @param endPost last post in the route
      * @param nextMatrix for every combination of posts, it stores the first stop after one post on the optimal route
      *                   to another post
-     * @return an ArrayList representing the route 
+     * @return an ArrayList representing the route
      */
     public static ArrayList<Integer> reconstructRoute(int startPost, int endPost, int[][] nextMatrix) {
         ArrayList<Integer> routeList = new ArrayList<Integer>();
@@ -169,5 +177,37 @@ public class Main {
         }
 
         return routeList;
+    }
+
+    /**
+     * Method: printOptimalCostMatrix
+     * Purpose: print the lowest cost for each transition from a given post to any other given post
+     * @param optimalMatrix stores the minimum cost from any post to any other post
+     * @param numberTradingPosts the number of trading posts on the user-provided canoe route
+     */
+    public static void printOptimalCostMatrix(int[][] optimalMatrix, int numberTradingPosts) {
+        for (int  i = 0; i < numberTradingPosts - 1; i++) {
+            for (int j = 0; j < numberTradingPosts - 1; j++) {
+                if (i < j) {
+                    System.out.print(optimalMatrix[i][j] + " ");
+                }
+                else {
+                    System.out.print("_");
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    /**
+     * Method: printRoute
+     * Purpose: print the optimal route (lowest-cost route) in the correct order
+     * @param routeList an ArrayList representing the route
+     */
+    public static void printRoute(ArrayList<Integer> routeList) {
+        System.out.print("Optimal route: ");
+        for (int post : routeList) {
+            System.out.print(post + " ");
+        }
     }
 }
