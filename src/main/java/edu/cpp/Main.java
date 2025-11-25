@@ -1,10 +1,20 @@
+/**
+ * Clarence Ballensky
+ * CS 3310.01, Fall 2025
+ * Programming Assignment 3: Canoe Problem
+ * Main class:
+ *      - processes text file input to construct a cost matrix
+ *      - computes the minimum cost to travel from point i to j
+ *      - reconstructs the actual path used
+ *      - print results
+ */
+
 package edu.cpp;
 
 import java.io.*;
 import java.util.*;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+
 public class Main {
     public static void main (String[] args) {
 
@@ -14,7 +24,22 @@ public class Main {
             throw new IllegalArgumentException("Please ONLY provide a file name as a command line argument.");
         }
 
-        File inputFile = new File(args[0]); //opens up the file specified in the command line
+        String fileName = args[0];
+
+        readCostMatrix(fileName);
+
+    }
+
+    /**
+     * Method: readCostMatrix
+     * Purpose: read the cost values from a text input file and store it in a
+     *          2D integer matrix
+     * @param fileName first command line argument
+     * @return a 2D integer array storing the cost to travel between posts
+     */
+    public static int[][] readCostMatrix(String fileName)
+    {
+        File inputFile = new File(fileName); //opens up the file specified in the command line
 
         int lineCount = 0; //keep track of which line of the i
 
@@ -44,12 +69,15 @@ public class Main {
 
                 row++;
             }
+
+            return costMatrix;
+
         } catch (FileNotFoundException e) {
-            System.out.println("Error: File not found --> " + args[0]);
+            System.out.println("Error: File not found --> " + fileName);
         } catch (IOException e) {
             System.out.println("Error reading file --> " + e.getMessage());
         }
 
-
+        return null; //in event of an error
     }
 }
