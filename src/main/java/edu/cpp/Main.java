@@ -13,6 +13,7 @@ package edu.cpp;
 
 import java.io.*;
 import java.util.*;
+import java.util.ArrayList;
 
 
 public class Main {
@@ -26,7 +27,16 @@ public class Main {
 
         String fileName = args[0];
 
-        readCostMatrix(fileName);
+        MatrixData data = readCostMatrix(fileName);
+
+        int[][] costMatrix = data.costMatrix;
+        int numberTradingPosts = data.numberTradingPosts;
+
+        int[][] optimalMatrix = new int[numberTradingPosts][numberTradingPosts];
+        int[][] nextMatrix = new int[numberTradingPosts][numberTradingPosts];
+
+        computeOptimalCosts(costMatrix, optimalMatrix, nextMatrix, numberTradingPosts);
+
 
     }
 
@@ -35,13 +45,12 @@ public class Main {
      * Purpose: read the cost values from a text input file and store it in a
      *          2D integer matrix
      * @param fileName first command line argument
-     * @return a 2D integer array storing the cost to travel between posts
+     * @return a 2D integer array storing the cost to travel between posts AND an integer storing the number of trading
+     * posts; made possible by the MatrixData helper class
      */
-    public static int[][] readCostMatrix(String fileName)
+    public static MatrixData readCostMatrix(String fileName)
     {
         File inputFile = new File(fileName); //opens up the file specified in the command line
-
-        int lineCount = 0; //keep track of which line of the i
 
         //read the contents of the file
         try (BufferedReader br = new BufferedReader(new FileReader(inputFile))) {
@@ -54,13 +63,13 @@ public class Main {
             int[][] costMatrix = new int[numberTradingPosts][numberTradingPosts];
 
             String line;
-            int row = 0;
+            int row = 0; //start at row 0
 
             while ((line = br.readLine()) != null && row < numberTradingPosts - 1) {
 
                 String[] parts = line.trim().split("\\s+");
 
-                for (int k = 0; k < parts.length; k++){ //start at row 0
+                for (int k = 0; k < parts.length; k++){
                     int cost = Integer.parseInt(parts[k]);
 
                     int col = row + k + 1; //start at column 1
@@ -70,22 +79,20 @@ public class Main {
                 row++;
             }
 
-            return costMatrix;
+            return new MatrixData(costMatrix, numberTradingPosts);
 
         } catch (FileNotFoundException e) {
-            System.out.println("Error: File not found --> " + fileName);
+            throw new RuntimeException("Error: File not found --> " + fileName, e);
         } catch (IOException e) {
-            System.out.println("Error reading file --> " + e.getMessage());
+            throw new RuntimeException("Error reading file: " + fileName, e);
         }
-
-        return null; //in event of an error
     }
 
     /**
      * Method: computeOptimalCosts
      * Purpose: use dynamic programming to compute the optimal canoe route, with the optimal route defined as the
      *          cheapest route
-     * @param costMatrix cost of traveling from any post to any other post
+     * @param costMatrix cost of traveling from any post to any other post (user-provided)
      * @param optimalMatrix stores the minimum cost from any post to any other post
      * @param nextMatrix stores the sequence of canoe rentals in the optimal order
      * @param numberTradingPosts the number of trading posts on the user-provided canoe route
@@ -93,6 +100,14 @@ public class Main {
     public static void computeOptimalCosts(int[][] costMatrix, int[][] optimalMatrix, int[][] nextMatrix,
                                            int numberTradingPosts)
     {
+        //initialize optimalMatrix with infinity values, and nextMatrix with -1 values
+        for (int i = 0; i < numberTradingPosts; i++) {
+            for (int j = 0; j < numberTradingPosts; j++) {
+                optimalMatrix[i][j] = Integer.MAX_VALUE;
+                nextMatrix[i][j] = -1;
+            }
+        }
+
         //set the cost of travelling from a post to itself to 0
         for (int i = 0; i < numberTradingPosts; i++) {
             optimalMatrix[i][i] = 0;
@@ -111,11 +126,11 @@ public class Main {
                 int endPost = startPost + length; //endPost is length distance away from startPost
 
                 //start by assuming the best solution is a direct rental from the startPost to the endPost
-                int bestCost =  costMatrix[startPost][endPost]; //best cost for travelling between two posts
+                int bestCost = costMatrix[startPost][endPost]; //best cost for travelling between two posts
                 int bestNext = endPost; //bestNext is the next post you should go to after startPost to minimize cost
 
                 //try all intermediate stops where startPost < intermediatePost < endPost
-                for (int intermediatePost = startPost + 1; intermediatePost < endPost -1; intermediatePost++) {
+                for (int intermediatePost = startPost + 1; intermediatePost < endPost - 1; intermediatePost++) {
                     //cost to rent a canoe from startPost to intermediatePost + optimal cost from k to j
                     //handles any other necessary intermediate stops recursively
                     int cost = costMatrix[startPost][intermediatePost] + optimalMatrix[intermediatePost][endPost];
@@ -133,5 +148,26 @@ public class Main {
                 nextMatrix[startPost][endPost] = bestNext; //first stop after startPost on the optimal route
             }
         }
+    }
+
+    /**
+     * takes the nextMatrix and turns it into the actual route by following the chain of best next-hop decisions
+     * @param startPost first post in the route
+     * @param endPost last post in the route
+     * @param nextMatrix for every combination of posts, it stores the first stop after one post on the optimal route
+     *                   to another post
+     * @return an ArrayList representing the route 
+     */
+    public static ArrayList<Integer> reconstructRoute(int startPost, int endPost, int[][] nextMatrix) {
+        ArrayList<Integer> routeList = new ArrayList<Integer>();
+        routeList.add(startPost);
+
+        while (startPost != endPost) {
+            int nextStop =  nextMatrix[startPost][endPost];
+            routeList.add(nextStop);
+            startPost = nextStop; //increments the loop
+        }
+
+        return routeList;
     }
 }
