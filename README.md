@@ -6,6 +6,8 @@ Using a dynamic programming algorithm, my program then computes the optimal cost
 ## Input File Specifications 
 The first line of the input file must contain a positive integer n, giving the number of posts along the river. The remaining n − 1 lines of the file must contain the positive integers of the cost matrix, delimited by white space, omitting unnecessary entries. 
 
+Four sample input files are located in CS3310_Assignment3_CanoeProblem > src > main > resources.
+
 A sample cost matrix is shown below (with n = 4):
 
 <img width="209" height="158" alt="image" src="https://github.com/user-attachments/assets/9307ff20-95c3-4cc4-a452-3c01417eef5d" />
