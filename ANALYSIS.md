@@ -1,4 +1,5 @@
 # Analysis
+## Recursive Formula for Optimal Cost
 costMatrix[i][j] = cost of renting a canoe directly from post i to post j
 
 optimalMatrix[i][j] = minimum possible cost of travelling from post i to post j
@@ -14,4 +15,10 @@ Every valid route from post i to post j must either:
 
 The recursive formula is:
 
-<img width="594" height="59" alt="image" src="https://github.com/user-attachments/assets/356d5309-85e1-4e0d-8b37-8bd541cafaa8" />
+<img width="641" height="58" alt="image" src="https://github.com/user-attachments/assets/a9d51dbe-2fe7-4da9-9866-143f205702d2" />
+
+nextMatrix[i][j] records which k produced the minimum cost, allowing us to later reconstruct the optimal route. 
+
+## Theoretical Runtime Analysis 
+
+
