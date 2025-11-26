@@ -6,8 +6,6 @@
  *                   readCostMatrix(fileName) method
  */
 
-package edu.cpp;
-
 public class MatrixData {
     public int[][] costMatrix;
     public int numberTradingPosts;
@@ -18,3 +16,4 @@ public class MatrixData {
     }
 
 }
+

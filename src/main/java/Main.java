@@ -9,10 +9,8 @@
  *      - print results
  */
 
-package edu.cpp;
-
 import java.io.*;
-import java.util.*;
+import java.util.Arrays;
 import java.util.ArrayList;
 
 
@@ -129,8 +127,9 @@ public class Main {
          *
          * This ensures that all smaller subproblems have already been computed.
          */
-        for (int length = 1; length < numberTradingPosts - 1; length++) {
-            for (int startPost = 0; startPost < numberTradingPosts - length - 1; startPost++) {
+        for (int length = 1; length < numberTradingPosts; length++) {
+            for (int startPost = 0; startPost + length < numberTradingPosts; startPost++) {
+
                 int endPost = startPost + length; //endPost is length distance away from startPost
 
                 //start by assuming the best solution is a direct rental from the startPost to the endPost
@@ -138,7 +137,7 @@ public class Main {
                 int bestNext = endPost; //bestNext is the next post you should go to after startPost to minimize cost
 
                 //try all intermediate stops where startPost < intermediatePost < endPost
-                for (int intermediatePost = startPost + 1; intermediatePost < endPost - 1; intermediatePost++) {
+                for (int intermediatePost = startPost + 1; intermediatePost < endPost; intermediatePost++) {
                     //cost to rent a canoe from startPost to intermediatePost + optimal cost from k to j
                     //handles any other necessary intermediate stops recursively
                     int cost = costMatrix[startPost][intermediatePost] + optimalMatrix[intermediatePost][endPost];
@@ -186,16 +185,35 @@ public class Main {
      * @param numberTradingPosts the number of trading posts on the user-provided canoe route
      */
     public static void printOptimalCostMatrix(int[][] optimalMatrix, int numberTradingPosts) {
-        for (int  i = 0; i < numberTradingPosts - 1; i++) {
-            for (int j = 0; j < numberTradingPosts - 1; j++) {
+        System.out.println("\nOptimal cost matrix:");
+        System.out.print("      ");
+        ArrayList<Character> alphabet = new ArrayList<>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+                                                                      'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+                                                                      'u', 'v', 'w', 'x', 'y', 'z'));
+        for (int currLetter = 0; currLetter < numberTradingPosts; currLetter++) {
+            System.out.printf("%4c ", alphabet.get(currLetter));
+        }
+
+        System.out.println();
+        System.out.print("      ");
+
+        for (int currLetter = 0; currLetter < numberTradingPosts; currLetter++) {
+            System.out.print("-----");
+        }
+
+        System.out.println();
+
+        for (int  i = 0; i < numberTradingPosts; i++) {
+            System.out.printf("%4c |", alphabet.get(i));
+            for (int j = 0; j < numberTradingPosts; j++) {
                 if (i < j) {
-                    System.out.print(optimalMatrix[i][j] + " ");
+                    System.out.printf("%4d ", optimalMatrix[i][j]);
                 }
                 else {
-                    System.out.print("_");
+                    System.out.printf("%4s ", "__");
                 }
             }
-            System.out.println();
+            System.out.println("\n");
         }
     }
 
@@ -205,9 +223,12 @@ public class Main {
      * @param routeList an ArrayList representing the route
      */
     public static void printRoute(ArrayList<Integer> routeList) {
-        System.out.print("Optimal route: ");
-        for (int post : routeList) {
-            System.out.print(post + " ");
+        System.out.print("\nOptimal route: ");
+        System.out.print(routeList.getFirst());
+        for (int post = 1; post < routeList.size(); post++) {
+            System.out.print(" -> " + routeList.get(post));
         }
+
+        System.out.println();
     }
 }
